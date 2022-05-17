@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RepositoryUrl>https://github.com/joao-zanutto/generic-library</RepositoryUrl>
+    <RepositoryUrl>https://github.com/joao-zanutto/TechnicalInterview.GenericLibrary</RepositoryUrl>
   </PropertyGroup>
 
 </Project>
