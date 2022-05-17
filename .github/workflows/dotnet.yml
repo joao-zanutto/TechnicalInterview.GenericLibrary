@@ -28,6 +28,6 @@ jobs:
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.0.0
       with:
-        path: TechnicalInterview.GenericLibrary/artifact/**
+        path: cpg-challenge-bk/artifact/**
         
 
