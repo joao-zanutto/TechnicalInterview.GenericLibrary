@@ -26,6 +26,6 @@ jobs:
         run: dotnet pack TechnicalInterview.GenericLibrary/TechnicalInterview.GenericLibrary.csproj -c Release -o output
       - name: Push NuGet package
         run: |
-          cd out
+          cd output
           dotnet nuget add source --username joao-zanutto --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/joao-zanutto/index.json"
           dotnet nuget push *.nupkg --api-key ${{ secrets.PAT }} --source "github" --skip-duplicate
