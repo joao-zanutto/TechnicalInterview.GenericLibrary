@@ -1,4 +1,4 @@
-name: .NET
+name: Build and Publish
 
 on:
   push:
@@ -7,24 +7,72 @@ on:
     branches: [master]
 
 jobs:
-  build:
+  sast:
     runs-on: ubuntu-latest
-
+    container:
+      image: insidersec/insider
     steps:
       - uses: actions/checkout@v3
+
+      - name: Run Insider SAST
+        run: /opt/insider/insider --tech csharp --target $(pwd)
+
+      - name: Gather results in a dir
+        run: |
+          mkdir sast-results
+          mv report.json sast-results/
+          mv report.html sast-results/
+          mv style.css sast-results/
+
+      - name: Upload Insider artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: sast-reports
+          path: sast-results
+
+  build:
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 5.0.x
+
       - name: Restore dependencies
         run: dotnet restore
+
       - name: Build
         run: dotnet build --no-restore
+
       - name: Test
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build --logger:"junit;LogFilePath=test-result.xml"
+
+      - name: Upload dotnet test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: TechnicalInterview.GenericLibrary.UTests/test-result.xml
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: TechnicalInterview.GenericLibrary.UTests/test-result.xml
+
       - name: Publish
         run: dotnet pack TechnicalInterview.GenericLibrary/TechnicalInterview.GenericLibrary.csproj -c Release -o output /p:VersionSuffix=$(date +"build%Y-%m-%d--%H-%M-%S")
+
       - name: Push NuGet package
+        if: github.event_name != 'pull_request'
         run: |
           cd output
           dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
