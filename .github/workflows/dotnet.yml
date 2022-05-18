@@ -17,6 +17,12 @@ jobs:
       - name: Run Insider SAST
         run: /opt/insider/insider --tech csharp --target $(pwd)
 
+      - name: Upload Insider artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: sast-report
+          path: report.json
+
   build:
     runs-on: ubuntu-latest
     steps:
