@@ -31,6 +31,11 @@ jobs:
           path: sast-results
 
   build:
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
