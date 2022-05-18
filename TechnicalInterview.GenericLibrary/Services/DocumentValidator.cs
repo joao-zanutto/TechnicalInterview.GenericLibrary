@@ -18,6 +18,11 @@ namespace TechnicalInterview.GenericLibrary.Services
                 return DocumentType.NoSupport;
         }
 
+        private string RemoveSpecialCharacters(string input)
+        {
+            return input.Trim().Replace(".", "").Replace("-", "").Replace("/", "").Replace(@"\", "");
+        }
+
         public bool IsCPF(string input)
         {
             int[] firstMultiplier = new int[9] { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
@@ -26,8 +31,7 @@ namespace TechnicalInterview.GenericLibrary.Services
             string digit;
             int addition;
             int remainder;
-            input = input.Trim();
-            input = input.Replace(".", "").Replace("-", "").Replace("/", "").Replace(@"\", "");
+            input = this.RemoveSpecialCharacters(input);
             if (input.Length != 11)
                 return false;
             hasCpf = input.Substring(0, 9);
@@ -63,8 +67,7 @@ namespace TechnicalInterview.GenericLibrary.Services
             int addition;
             int remainder;
 
-            input = input.Trim();
-            input = input.Replace(".", "").Replace("-", "").Replace("/", "");
+            input = this.RemoveSpecialCharacters(input);
             if (input.Length != 14)
                 return false;
             hasCNPJ = input.Substring(0, 12);
