@@ -47,15 +47,21 @@ jobs:
         run: dotnet build --no-restore
 
       - name: Test
-        run: dotnet test --no-build --logger trx --results-directory "TestResults"
+        run: dotnet test --no-build --logger:"junit;LogFilePath=test-result.xml"
 
       - name: Upload dotnet test results
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: TestResults
+          path: test-result.xml
         # Use always() to always run this step to publish test results when there are test failures
         if: ${{ always() }}
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "test-result.xml"
 
       - name: Publish
         run: dotnet pack TechnicalInterview.GenericLibrary/TechnicalInterview.GenericLibrary.csproj -c Release -o output /p:VersionSuffix=$(date +"build%Y-%m-%d--%H-%M-%S")
