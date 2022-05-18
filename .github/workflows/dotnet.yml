@@ -1,4 +1,4 @@
-name: .NET
+name: Build and Publish
 
 on:
   push:
@@ -7,24 +7,46 @@ on:
     branches: [master]
 
 jobs:
+  sast:
+    runs-on: insidersec/insider
+      - uses: actions/checkout@v3
+      
+      - name: Run Insider SAST
+        run: /opt/insider/insider --tech csharp --target $(pwd)
+
   build:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 5.0.x
+
       - name: Restore dependencies
         run: dotnet restore
+
       - name: Build
         run: dotnet build --no-restore
+
       - name: Test
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test --no-build --logger trx --results-directory "TestResults"
+
+      - name: Upload dotnet test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: TestResults
+        # Use always() to always run this step to publish test results when there are test failures
+        if: ${{ always() }}
+
       - name: Publish
         run: dotnet pack TechnicalInterview.GenericLibrary/TechnicalInterview.GenericLibrary.csproj -c Release -o output /p:VersionSuffix=$(date +"build%Y-%m-%d--%H-%M-%S")
+      
       - name: Push NuGet package
+        if: github.event_name != 'pull_request'
         run: |
           cd output
           dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
