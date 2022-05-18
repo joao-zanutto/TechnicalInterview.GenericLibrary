@@ -9,14 +9,14 @@ on:
 jobs:
   sast:
     runs-on: insidersec/insider
+    steps:
       - uses: actions/checkout@v3
-      
+
       - name: Run Insider SAST
         run: /opt/insider/insider --tech csharp --target $(pwd)
 
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
 
@@ -44,7 +44,7 @@ jobs:
 
       - name: Publish
         run: dotnet pack TechnicalInterview.GenericLibrary/TechnicalInterview.GenericLibrary.csproj -c Release -o output /p:VersionSuffix=$(date +"build%Y-%m-%d--%H-%M-%S")
-      
+
       - name: Push NuGet package
         if: github.event_name != 'pull_request'
         run: |
