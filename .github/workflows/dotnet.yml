@@ -23,7 +23,7 @@ jobs:
       - name: Test
         run: dotnet test --no-build --verbosity normal
       - name: Publish
-        run: dotnet pack TechnicalInterview.GenericLibrary/TechnicalInterview.GenericLibrary.csproj -c Release -o output
+        run: dotnet pack TechnicalInterview.GenericLibrary/TechnicalInterview.GenericLibrary.csproj -c Release -o output /p:VersionSuffix=%(date +"%Y-%m-%d--%H-%M-%S")
       - name: Push NuGet package
         run: |
           cd output
