@@ -4,6 +4,7 @@
     <PackageId>TechnicalInterview.GenericLibrary</PackageId>
     <TargetFramework>net5.0</TargetFramework>
     <RepositoryUrl>https://github.com/joao-zanutto/TechnicalInterview.GenericLibrary</RepositoryUrl>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
 </Project>
